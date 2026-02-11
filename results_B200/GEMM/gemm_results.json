@@ -1,0 +1,241 @@
+{
+  "title": "GEMM Benchmark \u2014 BF16 Square Matrices on NVIDIA B200",
+  "device_config": {
+    "hardware": {
+      "gpu_name": "NVIDIA B200",
+      "gpu_architecture": "Blackwell",
+      "compute_capability": "sm_100",
+      "num_sms": 148,
+      "max_threads_per_sm": 2048,
+      "shared_memory_per_sm_kb": 228.0,
+      "global_memory_gb": 178.35,
+      "max_sm_clock_mhz": "1965",
+      "max_mem_clock_mhz": "3996"
+    },
+    "software": {
+      "cuda_version": "12.8",
+      "cudnn_version": "91002",
+      "pytorch_version": "2.8.0+cu128",
+      "python_version": "3.12.3",
+      "os": "Linux 6.8.0-100-generic",
+      "nvidia_driver": "580.126.09",
+      "triton_version": "3.4.0",
+      "cuda_tile_version": "1.1.0",
+      "flash_attn_version": "2.8.3"
+    }
+  },
+  "benchmark_config": {
+    "dtype": "torch.bfloat16",
+    "matrix_type": "square (M=N=K)",
+    "matrix_sizes": [
+      4096,
+      8192,
+      12288,
+      16384
+    ],
+    "operation": "C = A @ B  (A: [M,K] x B: [K,N] -> C: [M,N])",
+    "flop_counting": "2 * M * N * K (multiply-add counted as 2 ops)",
+    "timing_method": "CUDA events (torch.cuda.Event, enable_timing=True)",
+    "warmup_iterations": 10,
+    "benchmark_iterations": 50,
+    "raw_simt_warmup_iterations": 2,
+    "raw_simt_benchmark_iterations": 3
+  },
+  "implementation_details": {
+    "cuBLAS": {
+      "full_name": "cuBLAS (torch.matmul)",
+      "description": "NVIDIA's vendor-optimized BLAS library via torch.matmul. cuBLAS auto-selects the best Tensor Core instruction set for the target GPU. Uses TMA, warp specialization, persistent kernels, and deep software pipelines. Represents the practical upper bound for library-based GEMM.",
+      "tensor_core_api": "Architecture-native Tensor Core instructions (auto-selected)",
+      "memory_subsystem": "TMA + async pipeline + L2 swizzling",
+      "optimization_level": "Vendor-optimized (closed-source)",
+      "abstraction_level": "Library call"
+    },
+    "Triton": {
+      "full_name": "Triton (autotuned)",
+      "description": "OpenAI Triton compiler with @triton.autotune over 18 tile/warp/stage configurations. Triton's tl.dot compiles to architecture-native Tensor Core instructions. Includes L2 cache grouping (GROUP_SIZE_M=8) for improved data reuse and incremental pointer advancement. Based on the official Triton matmul tutorial (03-matrix-multiplication.py). Does NOT use TMA or warp specialization.",
+      "tensor_core_api": "Architecture-native via tl.dot (Triton compiler lowers to PTX)",
+      "memory_subsystem": "Standard global loads + L2 cache grouping",
+      "optimization_level": "Autotuned (18 configs), no TMA/warp specialization",
+      "abstraction_level": "High-level GPU compiler (Python DSL)"
+    },
+    "WMMA": {
+      "full_name": "WMMA (hand-written CUDA, legacy Tensor Core API)",
+      "description": "Hand-written CUDA kernel using the WMMA (Warp Matrix Multiply-Accumulate) API \u2014 a Volta-era (sm_70+) Tensor Core interface. Uses mma.sync instructions (warp-level, 32 threads). Optimizations: shared memory tiling (128x128x32), double-buffered cp.async pipeline (NUM_STAGES=2 for sm_120 shared memory limit), 2x2 register tiling per warp, shared memory padding for bank conflict avoidance, and __launch_bounds__ for occupancy control.",
+      "tensor_core_api": "WMMA / mma.sync (legacy, 32-thread warp-level)",
+      "memory_subsystem": "cp.async + double-buffered shared memory + padding",
+      "optimization_level": "Hand-optimized CUDA with standard techniques",
+      "abstraction_level": "Low-level CUDA C++ (hand-written kernel)",
+      "sm_120_fix": "NUM_STAGES reduced from 3 to 2 (48KB shared mem limit on sm_120)"
+    },
+    "Raw SIMT": {
+      "full_name": "Raw SIMT (hand-written CUDA, no Tensor Cores)",
+      "description": "Hand-written CUDA kernel using standard SIMT programming model \u2014 scalar FP32 FMA instructions only, no Tensor Cores. BF16 inputs are converted to FP32 for computation, then back to BF16 for output. Uses shared memory tiling for data reuse. Represents the baseline performance achievable without any Tensor Core acceleration.",
+      "tensor_core_api": "None (scalar FMA only)",
+      "memory_subsystem": "Shared memory tiling",
+      "optimization_level": "Basic hand-written CUDA (tiled shared memory)",
+      "abstraction_level": "Low-level CUDA C++ (hand-written kernel)"
+    },
+    "CuTile": {
+      "full_name": "NVIDIA CuTile (CUDA Tile, Blackwell)",
+      "description": "NVIDIA's official high-level tile abstraction for GPU kernels (cuda.tile). Abstracts warps, registers, and shared memory while preserving Tensor Core and TMA utilization. Requires Blackwell GPU with compute capability 10.x or 12.x. Uses ct.mma for matmul, ct.load/ct.store for TMA-backed memory ops. Kernel decorator uses ByTarget for architecture-specific CTA clustering: num_ctas=ByTarget(sm_100=2, sm_120=2).",
+      "tensor_core_api": "Blackwell Tensor Cores via ct.mma",
+      "memory_subsystem": "TMA (automatic via CuTile abstraction)",
+      "optimization_level": "High-level (compiler-managed tiling)",
+      "abstraction_level": "Python DSL (NVIDIA cuda.tile)",
+      "sm_120_fix": "Added sm_120=2 to ByTarget (originally only had sm_100=2, causing 4x slowdown)"
+    }
+  },
+  "results": {
+    "cuBLAS": {
+      "4096": {
+        "time_ms": 0.0905,
+        "tflops": 1518.65,
+        "status": "ok",
+        "warmup_iterations": 10,
+        "benchmark_iterations": 50
+      },
+      "8192": {
+        "time_ms": 0.6577,
+        "tflops": 1671.82,
+        "status": "ok",
+        "warmup_iterations": 10,
+        "benchmark_iterations": 50
+      },
+      "12288": {
+        "time_ms": 2.3827,
+        "tflops": 1557.39,
+        "status": "ok",
+        "warmup_iterations": 10,
+        "benchmark_iterations": 50
+      },
+      "16384": {
+        "time_ms": 5.7963,
+        "tflops": 1517.52,
+        "status": "ok",
+        "warmup_iterations": 10,
+        "benchmark_iterations": 50
+      }
+    },
+    "Triton": {
+      "4096": {
+        "time_ms": 0.1288,
+        "tflops": 1066.81,
+        "status": "ok",
+        "warmup_iterations": 10,
+        "benchmark_iterations": 50
+      },
+      "8192": {
+        "time_ms": 1.0645,
+        "tflops": 1032.87,
+        "status": "ok",
+        "warmup_iterations": 10,
+        "benchmark_iterations": 50
+      },
+      "12288": {
+        "time_ms": 3.7019,
+        "tflops": 1002.42,
+        "status": "ok",
+        "warmup_iterations": 10,
+        "benchmark_iterations": 50
+      },
+      "16384": {
+        "time_ms": 8.696,
+        "tflops": 1011.51,
+        "status": "ok",
+        "warmup_iterations": 10,
+        "benchmark_iterations": 50
+      }
+    },
+    "WMMA": {
+      "4096": {
+        "time_ms": 0.7124,
+        "tflops": 192.93,
+        "status": "ok",
+        "warmup_iterations": 10,
+        "benchmark_iterations": 50
+      },
+      "8192": {
+        "time_ms": 5.5108,
+        "tflops": 199.52,
+        "status": "ok",
+        "warmup_iterations": 10,
+        "benchmark_iterations": 50
+      },
+      "12288": {
+        "time_ms": 18.5534,
+        "tflops": 200.01,
+        "status": "ok",
+        "warmup_iterations": 10,
+        "benchmark_iterations": 50
+      },
+      "16384": {
+        "time_ms": 43.2042,
+        "tflops": 203.59,
+        "status": "ok",
+        "warmup_iterations": 10,
+        "benchmark_iterations": 50
+      }
+    },
+    "Raw SIMT": {
+      "4096": {
+        "time_ms": 17.1254,
+        "tflops": 8.03,
+        "status": "ok",
+        "warmup_iterations": 2,
+        "benchmark_iterations": 3
+      },
+      "8192": {
+        "time_ms": 142.8686,
+        "tflops": 7.7,
+        "status": "ok",
+        "warmup_iterations": 2,
+        "benchmark_iterations": 3
+      },
+      "12288": {
+        "time_ms": 481.7192,
+        "tflops": 7.7,
+        "status": "ok",
+        "warmup_iterations": 2,
+        "benchmark_iterations": 3
+      },
+      "16384": {
+        "time_ms": 1141.0351,
+        "tflops": 7.71,
+        "status": "ok",
+        "warmup_iterations": 2,
+        "benchmark_iterations": 3
+      }
+    },
+    "CuTile": {
+      "4096": {
+        "time_ms": 0.1428,
+        "tflops": 962.23,
+        "status": "ok",
+        "warmup_iterations": 10,
+        "benchmark_iterations": 50
+      },
+      "8192": {
+        "time_ms": 1.2555,
+        "tflops": 875.79,
+        "status": "ok",
+        "warmup_iterations": 10,
+        "benchmark_iterations": 50
+      },
+      "12288": {
+        "time_ms": 4.3554,
+        "tflops": 852.0,
+        "status": "ok",
+        "warmup_iterations": 10,
+        "benchmark_iterations": 50
+      },
+      "16384": {
+        "time_ms": 10.3496,
+        "tflops": 849.9,
+        "status": "ok",
+        "warmup_iterations": 10,
+        "benchmark_iterations": 50
+      }
+    }
+  },
+  "timestamp": "2026-02-10T04:26:08.447151"
+}

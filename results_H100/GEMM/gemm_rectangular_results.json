@@ -1,0 +1,173 @@
+{
+  "title": "Rectangular GEMM Benchmark \u2014 BF16 on NVIDIA H100 NVL",
+  "device_config": {
+    "hardware": {
+      "gpu_name": "NVIDIA H100 NVL",
+      "compute_capability": "sm_90",
+      "num_sms": 132,
+      "global_memory_gb": 93.09
+    },
+    "software": {
+      "cuda_version": "12.6",
+      "pytorch_version": "2.7.1+cu126",
+      "python_version": "3.12.3",
+      "triton_version": "3.3.1",
+      "nvidia_driver": "580.105.08"
+    }
+  },
+  "benchmark_config": {
+    "dtype": "torch.bfloat16",
+    "matrix_type": "rectangular (LLaMA-7B FFN: dim=4096, ffn_dim=11008)",
+    "shapes": [
+      {
+        "M": 2048,
+        "K": 4096,
+        "N": 11008,
+        "label": "FFN_up_seq2048"
+      },
+      {
+        "M": 2048,
+        "K": 11008,
+        "N": 4096,
+        "label": "FFN_down_seq2048"
+      },
+      {
+        "M": 4096,
+        "K": 4096,
+        "N": 11008,
+        "label": "FFN_up_seq4096"
+      },
+      {
+        "M": 4096,
+        "K": 11008,
+        "N": 4096,
+        "label": "FFN_down_seq4096"
+      }
+    ],
+    "warmup_iterations": 10,
+    "benchmark_iterations": 50
+  },
+  "results": {
+    "cuBLAS": {
+      "FFN_up_seq2048": {
+        "time_ms": 0.3674,
+        "tflops": 502.63,
+        "status": "ok",
+        "warmup_iterations": 10,
+        "benchmark_iterations": 50
+      },
+      "FFN_down_seq2048": {
+        "time_ms": 0.3291,
+        "tflops": 561.25,
+        "status": "ok",
+        "warmup_iterations": 10,
+        "benchmark_iterations": 50
+      },
+      "FFN_up_seq4096": {
+        "time_ms": 0.7057,
+        "tflops": 523.41,
+        "status": "ok",
+        "warmup_iterations": 10,
+        "benchmark_iterations": 50
+      },
+      "FFN_down_seq4096": {
+        "time_ms": 0.6749,
+        "tflops": 547.26,
+        "status": "ok",
+        "warmup_iterations": 10,
+        "benchmark_iterations": 50
+      }
+    },
+    "Triton": {
+      "FFN_up_seq2048": {
+        "time_ms": 0.4057,
+        "tflops": 455.24,
+        "status": "ok",
+        "warmup_iterations": 10,
+        "benchmark_iterations": 50
+      },
+      "FFN_down_seq2048": {
+        "time_ms": 0.3363,
+        "tflops": 549.14,
+        "status": "ok",
+        "warmup_iterations": 10,
+        "benchmark_iterations": 50
+      },
+      "FFN_up_seq4096": {
+        "time_ms": 0.7722,
+        "tflops": 478.34,
+        "status": "ok",
+        "warmup_iterations": 10,
+        "benchmark_iterations": 50
+      },
+      "FFN_down_seq4096": {
+        "time_ms": 0.7433,
+        "tflops": 496.92,
+        "status": "ok",
+        "warmup_iterations": 10,
+        "benchmark_iterations": 50
+      }
+    },
+    "WMMA": {
+      "FFN_up_seq2048": {
+        "time_ms": 1.6588,
+        "tflops": 111.33,
+        "status": "ok",
+        "warmup_iterations": 10,
+        "benchmark_iterations": 50
+      },
+      "FFN_down_seq2048": {
+        "time_ms": 1.5916,
+        "tflops": 116.03,
+        "status": "ok",
+        "warmup_iterations": 10,
+        "benchmark_iterations": 50
+      },
+      "FFN_up_seq4096": {
+        "time_ms": 3.0206,
+        "tflops": 122.28,
+        "status": "ok",
+        "warmup_iterations": 10,
+        "benchmark_iterations": 50
+      },
+      "FFN_down_seq4096": {
+        "time_ms": 2.8733,
+        "tflops": 128.55,
+        "status": "ok",
+        "warmup_iterations": 10,
+        "benchmark_iterations": 50
+      }
+    },
+    "Raw SIMT": {
+      "FFN_up_seq2048": {
+        "time_ms": 30.1388,
+        "tflops": 6.13,
+        "status": "ok",
+        "warmup_iterations": 2,
+        "benchmark_iterations": 3
+      },
+      "FFN_down_seq2048": {
+        "time_ms": 30.3511,
+        "tflops": 6.08,
+        "status": "ok",
+        "warmup_iterations": 2,
+        "benchmark_iterations": 3
+      },
+      "FFN_up_seq4096": {
+        "time_ms": 59.9338,
+        "tflops": 6.16,
+        "status": "ok",
+        "warmup_iterations": 2,
+        "benchmark_iterations": 3
+      },
+      "FFN_down_seq4096": {
+        "time_ms": 60.1828,
+        "tflops": 6.14,
+        "status": "ok",
+        "warmup_iterations": 2,
+        "benchmark_iterations": 3
+      }
+    }
+  },
+  "timestamp": "2026-02-10T05:03:30.651037"
+}

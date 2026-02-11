@@ -1,0 +1,36 @@
+# =============================================================================
+# CuTile Benchmark — Python Package Requirements
+# =============================================================================
+# Tested on:
+#   - NVIDIA RTX PRO 6000 Blackwell Server Edition (sm_120)
+#   - NVIDIA B200 (sm_100)
+#   - PyTorch 2.8.0+cu128
+#   - Python 3.12.3
+#   - Ubuntu 24.04.3 LTS
+#
+# Install with:
+#   pip install --break-system-packages -r requirements.txt
+#
+# NOTE: flash-attn needs --no-build-isolation:
+#   pip install --break-system-packages --no-build-isolation flash-attn==2.8.3
+# =============================================================================
+
+# Core ML framework (must be installed first, with CUDA 12.8 support)
+# Install via: pip install torch==2.8.0 --index-url https://download.pytorch.org/whl/cu128
+torch==2.8.0
+
+# Triton compiler for GPU kernels
+triton==3.4.0
+
+# FlashAttention-2 — install separately with: pip install --no-build-isolation flash-attn==2.8.3
+flash-attn==2.8.3
+
+# NVIDIA CuTile (cuda.tile) — tile-based GPU programming DSL
+# Requires: Blackwell GPU (sm_100 or sm_120) + CUDA Toolkit 13.1 for tileiras compiler
+cuda-tile==1.1.0
+
+# Numerical computing
+numpy==2.1.2
+
+# For CUDA C++ extension building
+setuptools>=80.0.0

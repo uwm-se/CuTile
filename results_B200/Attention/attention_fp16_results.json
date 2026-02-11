@@ -1,0 +1,186 @@
+{
+  "title": "Attention Benchmark \u2014 FP16 Causal on NVIDIA B200",
+  "device_config": {
+    "hardware": {
+      "gpu_name": "NVIDIA B200",
+      "compute_capability": "sm_100",
+      "num_sms": 148,
+      "global_memory_gb": 178.35
+    },
+    "software": {
+      "cuda_version": "12.8",
+      "pytorch_version": "2.8.0+cu128",
+      "python_version": "3.12.3",
+      "triton_version": "3.4.0",
+      "flash_attn_version": "2.8.3",
+      "cuda_tile_version": "1.1.0",
+      "nvidia_driver": "580.126.09"
+    }
+  },
+  "benchmark_config": {
+    "dtype": "torch.float16",
+    "batch": 8,
+    "num_heads": 32,
+    "head_dim": 128,
+    "seq_lengths": [
+      512,
+      1024,
+      2048,
+      4096
+    ],
+    "causal": true
+  },
+  "results": {
+    "FlashAttention-2": {
+      "b8_s512": {
+        "time_ms": 0.0831,
+        "tflops": 206.72,
+        "status": "ok",
+        "warmup_iterations": 10,
+        "benchmark_iterations": 50
+      },
+      "b8_s1024": {
+        "time_ms": 0.2306,
+        "tflops": 297.97,
+        "status": "ok",
+        "warmup_iterations": 10,
+        "benchmark_iterations": 50
+      },
+      "b8_s2048": {
+        "time_ms": 0.7605,
+        "tflops": 361.43,
+        "status": "ok",
+        "warmup_iterations": 10,
+        "benchmark_iterations": 50
+      },
+      "b8_s4096": {
+        "time_ms": 2.7459,
+        "tflops": 400.42,
+        "status": "ok",
+        "warmup_iterations": 10,
+        "benchmark_iterations": 50
+      }
+    },
+    "cuDNN (SDPA)": {
+      "b8_s512": {
+        "time_ms": 0.1535,
+        "tflops": 111.94,
+        "status": "ok",
+        "warmup_iterations": 10,
+        "benchmark_iterations": 50
+      },
+      "b8_s1024": {
+        "time_ms": 0.4984,
+        "tflops": 137.87,
+        "status": "ok",
+        "warmup_iterations": 10,
+        "benchmark_iterations": 50
+      },
+      "b8_s2048": {
+        "time_ms": 1.7873,
+        "tflops": 153.8,
+        "status": "ok",
+        "warmup_iterations": 10,
+        "benchmark_iterations": 50
+      },
+      "b8_s4096": {
+        "time_ms": 6.762,
+        "tflops": 162.6,
+        "status": "ok",
+        "warmup_iterations": 10,
+        "benchmark_iterations": 50
+      }
+    },
+    "Triton": {
+      "b8_s512": {
+        "time_ms": 0.0733,
+        "tflops": 234.3,
+        "status": "ok",
+        "warmup_iterations": 10,
+        "benchmark_iterations": 50
+      },
+      "b8_s1024": {
+        "time_ms": 0.1896,
+        "tflops": 362.48,
+        "status": "ok",
+        "warmup_iterations": 10,
+        "benchmark_iterations": 50
+      },
+      "b8_s2048": {
+        "time_ms": 0.5951,
+        "tflops": 461.91,
+        "status": "ok",
+        "warmup_iterations": 10,
+        "benchmark_iterations": 50
+      },
+      "b8_s4096": {
+        "time_ms": 2.0922,
+        "tflops": 525.53,
+        "status": "ok",
+        "warmup_iterations": 10,
+        "benchmark_iterations": 50
+      }
+    },
+    "CuTile": {
+      "b8_s512": {
+        "time_ms": 0.0424,
+        "tflops": 405.56,
+        "status": "ok",
+        "warmup_iterations": 10,
+        "benchmark_iterations": 50
+      },
+      "b8_s1024": {
+        "time_ms": 0.1032,
+        "tflops": 666.05,
+        "status": "ok",
+        "warmup_iterations": 10,
+        "benchmark_iterations": 50
+      },
+      "b8_s2048": {
+        "time_ms": 0.3198,
+        "tflops": 859.66,
+        "status": "ok",
+        "warmup_iterations": 10,
+        "benchmark_iterations": 50
+      },
+      "b8_s4096": {
+        "time_ms": 1.1876,
+        "tflops": 925.83,
+        "status": "ok",
+        "warmup_iterations": 10,
+        "benchmark_iterations": 50
+      }
+    },
+    "Naive (Unfused)": {
+      "b8_s512": {
+        "time_ms": 0.6812,
+        "tflops": 25.22,
+        "status": "ok",
+        "warmup_iterations": 3,
+        "benchmark_iterations": 10
+      },
+      "b8_s1024": {
+        "time_ms": 2.4542,
+        "tflops": 28.0,
+        "status": "ok",
+        "warmup_iterations": 3,
+        "benchmark_iterations": 10
+      },
+      "b8_s2048": {
+        "time_ms": 10.6189,
+        "tflops": 25.89,
+        "status": "ok",
+        "warmup_iterations": 3,
+        "benchmark_iterations": 10
+      },
+      "b8_s4096": {
+        "time_ms": 44.1267,
+        "tflops": 24.92,
+        "status": "ok",
+        "warmup_iterations": 3,
+        "benchmark_iterations": 10
+      }
+    }
+  },
+  "timestamp": "2026-02-10T04:28:05.929719"
+}

@@ -1,0 +1,84 @@
+{
+  "title": "H100 NVL Benchmark Reproducibility Configuration",
+  "description": "Complete environment and configuration for reproducing all benchmarks on NVIDIA H100 NVL",
+  "hardware": {
+    "gpu": "NVIDIA H100 NVL",
+    "gpu_architecture": "Hopper (sm_90)",
+    "compute_capability": "9.0",
+    "num_sms": 132,
+    "vram_gb": 93.09,
+    "tdp_watts": 400,
+    "shared_memory_per_sm_kb": 228.0,
+    "max_sm_clock_mhz": 1785,
+    "platform": "Azure VM"
+  },
+  "software": {
+    "os": "Ubuntu 24.04.2 LTS (Noble Numbat)",
+    "kernel": "6.14.0-1014-azure",
+    "nvidia_driver": "580.105.08",
+    "cuda_toolkit_version": "12.6",
+    "nvcc_version": "12.6.77",
+    "python": "3.12.3",
+    "pytorch": "2.7.1+cu126",
+    "triton": "3.3.1",
+    "flash_attn": "2.8.3",
+    "cudnn": "9.5.1",
+    "numpy": "2.2.6",
+    "cuda_tile": "NOT AVAILABLE (requires Blackwell sm_100/sm_120)"
+  },
+  "environment_setup": {
+    "notes": [
+      "Azure VM — no sudo access needed for benchmarks",
+      "PyTorch 2.7.1 built with CUDA 12.6",
+      "CUDA 12.6 used for building CUDA C++ extensions (WMMA, Raw SIMT)",
+      "No CuTile available — H100 is Hopper architecture, CuTile requires Blackwell",
+      "CUDA extensions installed with --user flag (no root)"
+    ],
+    "cuda_home_for_extensions": "/usr/local/cuda-12.6",
+    "build_command": "CUDA_HOME=/usr/local/cuda-12.6 python3 setup.py install --user",
+    "pip_install_packages": [
+      "torch (pre-installed on Azure VM)",
+      "triton (pre-installed)",
+      "flash-attn (pre-installed)",
+      "numpy (pre-installed)"
+    ]
+  },
+  "benchmark_parameters": {
+    "GEMM": {
+      "square_sizes": [4096, 8192, 12288, 16384],
+      "rectangular_shapes": "LLaMA-7B FFN: (2048/4096, 4096, 11008) up and (2048/4096, 11008, 4096) down",
+      "dtypes": ["bfloat16", "float16"],
+      "warmup_iterations": 10,
+      "benchmark_iterations": 50,
+      "raw_simt_warmup": 2,
+      "raw_simt_iterations": 3,
+      "implementations": ["cuBLAS", "Triton", "WMMA", "Raw SIMT"]
+    },
+    "Attention": {
+      "batch_size": 8,
+      "num_heads": 32,
+      "head_dim": 128,
+      "seq_lengths": [512, 1024, 2048, 4096, 8192],
+      "causal": true,
+      "dtypes": ["bfloat16", "float16"],
+      "warmup_iterations": 10,
+      "benchmark_iterations": 50,
+      "implementations": ["FlashAttention-2", "cuDNN (SDPA)", "Triton", "Naive (Unfused)"]
+    },
+    "E2E_Inference": {
+      "model": "LLaMA-7B config (4 layers, dim=4096, 32 heads, d=128, FFN=11008)",
+      "batch_sizes": [1, 8, 32],
+      "prefill_seq_len": 2048,
+      "decode_context": 2048,
+      "dtype": "bfloat16",
+      "implementations": ["Eager (Naive)", "Eager (SDPA)", "Eager (FA2)", "torch.compile (SDPA)"]
+    }
+  },
+  "key_differences_from_blackwell": {
+    "no_cutile": "CuTile (cuda.tile) requires Blackwell GPU (sm_100/sm_120). H100 is Hopper (sm_90).",
+    "cuda_toolkit": "Using CUDA 12.6 (vs 12.8 on Blackwell pods)",
+    "pytorch_version": "2.7.1 (vs 2.8.0 on Blackwell pods)",
+    "triton_version": "3.3.1 (vs 3.4.0 on Blackwell pods)",
+    "platform": "Azure VM (vs RunPod for Blackwell GPUs)"
+  }
+}

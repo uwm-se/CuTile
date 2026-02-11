@@ -1,0 +1,241 @@
+{
+  "title": "Fused Attention Benchmark - BF16 Causal Attention on NVIDIA B200",
+  "device_config": {
+    "hardware": {
+      "gpu_name": "NVIDIA B200",
+      "gpu_architecture": "Blackwell",
+      "compute_capability": "sm_100",
+      "num_sms": 148,
+      "shared_memory_per_sm_kb": 228.0,
+      "global_memory_gb": 178.35,
+      "max_sm_clock_mhz": "1965",
+      "max_mem_clock_mhz": "3996"
+    },
+    "software": {
+      "cuda_version": "12.8",
+      "pytorch_version": "2.8.0+cu128",
+      "python_version": "3.12.3",
+      "os": "Linux 6.8.0-100-generic",
+      "nvidia_driver": "580.126.09",
+      "triton_version": "3.4.0",
+      "flash_attn_version": "2.8.3"
+    }
+  },
+  "benchmark_config": {
+    "dtype": "torch.bfloat16",
+    "num_heads": 32,
+    "head_dim": 128,
+    "batch_sizes": [
+      8
+    ],
+    "seq_lengths": [
+      512,
+      1024,
+      2048,
+      4096
+    ],
+    "causal": true,
+    "model_reference": "LLaMA-7B-like (32 heads, d=128)",
+    "operation": "Scaled Dot-Product Attention: O = softmax(Q @ K^T / sqrt(d)) @ V",
+    "flop_counting": "4 * B * H * N^2 * D (causal: /2)",
+    "timing_method": "CUDA events",
+    "warmup_iterations": 10,
+    "benchmark_iterations": 50
+  },
+  "implementation_details": {
+    "FlashAttention-2": {
+      "full_name": "FlashAttention-2 (Tri Dao, flash-attn 2.8.3)",
+      "description": "Official FlashAttention-2 implementation from the flash-attn package (Tri Dao). Uses the IO-aware tiling algorithm with online softmax to avoid materializing the N x N attention matrix. Optimized CUDA kernels with Tensor Core acceleration. Memory complexity: O(N) instead of O(N^2). Reference: https://github.com/Dao-AILab/flash-attention",
+      "algorithm": "FlashAttention-2 (online softmax, tiled IO)",
+      "tensor_cores": "Yes (optimized CUDA kernels)",
+      "memory_complexity": "O(N) - no N^2 attention matrix",
+      "fusion": "Fully fused (QK^T + softmax + AV in single kernel)",
+      "package": "flash-attn 2.8.3"
+    },
+    "cuDNN (SDPA)": {
+      "full_name": "cuDNN Fused Attention via PyTorch SDPA",
+      "description": "NVIDIA cuDNN's fused multi-head attention, accessed through PyTorch's SDPA efficient_attention backend. Uses NVIDIA's vendor-optimized attention implementation with Tensor Cores. Different algorithm/implementation from FlashAttention-2.",
+      "algorithm": "cuDNN fused MHA (vendor-optimized)",
+      "tensor_cores": "Yes (cuDNN Tensor Core kernels)",
+      "memory_complexity": "O(N) - memory-efficient implementation",
+      "fusion": "Fully fused (vendor implementation)"
+    },
+    "Triton": {
+      "full_name": "Triton Fused Attention (Flash Attention v2)",
+      "description": "Flash Attention v2 algorithm implemented in Triton, adapted from the official tutorial (06-fused-attention.py). Uses online softmax with tiled Q/K/V processing. tl.dot compiles to architecture-native Tensor Core instructions. Autotuned across 6 BLOCK_M/BLOCK_N/warp configs.",
+      "algorithm": "Flash Attention v2 (online softmax, tiled)",
+      "tensor_cores": "Yes (architecture-native Tensor Core instructions via tl.dot)",
+      "memory_complexity": "O(N) - no N^2 attention matrix",
+      "fusion": "Fully fused (single Triton kernel)"
+    },
+    "Naive (Unfused)": {
+      "full_name": "Naive Unfused Attention (separate matmuls + softmax)",
+      "description": "Standard textbook attention: S = Q @ K^T * scale (cuBLAS), P = softmax(S) (PyTorch), O = P @ V (cuBLAS). Three separate kernel launches with full N x N attention matrix materialized in global memory. Represents the baseline without any fusion or memory optimization.",
+      "algorithm": "Standard matmul + softmax + matmul (3 separate ops)",
+      "tensor_cores": "Yes (cuBLAS matmuls use Tensor Cores)",
+      "memory_complexity": "O(N^2) - full attention matrix in memory",
+      "fusion": "None (3 separate kernel launches)"
+    },
+    "CuTile": {
+      "full_name": "NVIDIA CuTile FMHA (Blackwell-only)",
+      "description": "NVIDIA's official high-level tile abstraction for Fused Multi-Head Attention, based on the cuda.tile AttentionFMHA.py sample. Implements the FlashAttention-2 online softmax algorithm using ct.mma for Tensor Core acceleration and ct.load/ct.store for TMA-backed memory ops. Requires Blackwell GPU (B200, B100, RTX 5090) with compute 10.x/12.x.",
+      "algorithm": "Flash Attention v2 (online softmax, tiled) via CuTile",
+      "tensor_cores": "Yes (Blackwell Tensor Cores via ct.mma)",
+      "memory_complexity": "O(N) - no N^2 attention matrix",
+      "fusion": "Fully fused (single CuTile kernel)"
+    }
+  },
+  "results": {
+    "FlashAttention-2": {
+      "b8_s512": {
+        "time_ms": 0.0828,
+        "tflops": 207.45,
+        "status": "ok",
+        "warmup_iterations": 10,
+        "benchmark_iterations": 50
+      },
+      "b8_s1024": {
+        "time_ms": 0.2311,
+        "tflops": 297.33,
+        "status": "ok",
+        "warmup_iterations": 10,
+        "benchmark_iterations": 50
+      },
+      "b8_s2048": {
+        "time_ms": 0.7593,
+        "tflops": 362.0,
+        "status": "ok",
+        "warmup_iterations": 10,
+        "benchmark_iterations": 50
+      },
+      "b8_s4096": {
+        "time_ms": 2.7441,
+        "tflops": 400.69,
+        "status": "ok",
+        "warmup_iterations": 10,
+        "benchmark_iterations": 50
+      }
+    },
+    "cuDNN (SDPA)": {
+      "b8_s512": {
+        "time_ms": 0.1532,
+        "tflops": 112.12,
+        "status": "ok",
+        "warmup_iterations": 10,
+        "benchmark_iterations": 50
+      },
+      "b8_s1024": {
+        "time_ms": 0.4982,
+        "tflops": 137.93,
+        "status": "ok",
+        "warmup_iterations": 10,
+        "benchmark_iterations": 50
+      },
+      "b8_s2048": {
+        "time_ms": 1.7867,
+        "tflops": 153.84,
+        "status": "ok",
+        "warmup_iterations": 10,
+        "benchmark_iterations": 50
+      },
+      "b8_s4096": {
+        "time_ms": 6.7603,
+        "tflops": 162.64,
+        "status": "ok",
+        "warmup_iterations": 10,
+        "benchmark_iterations": 50
+      }
+    },
+    "Triton": {
+      "b8_s512": {
+        "time_ms": 0.0733,
+        "tflops": 234.48,
+        "status": "ok",
+        "warmup_iterations": 10,
+        "benchmark_iterations": 50
+      },
+      "b8_s1024": {
+        "time_ms": 0.1895,
+        "tflops": 362.54,
+        "status": "ok",
+        "warmup_iterations": 10,
+        "benchmark_iterations": 50
+      },
+      "b8_s2048": {
+        "time_ms": 0.5951,
+        "tflops": 461.88,
+        "status": "ok",
+        "warmup_iterations": 10,
+        "benchmark_iterations": 50
+      },
+      "b8_s4096": {
+        "time_ms": 2.0919,
+        "tflops": 525.6,
+        "status": "ok",
+        "warmup_iterations": 10,
+        "benchmark_iterations": 50
+      }
+    },
+    "CuTile": {
+      "b8_s512": {
+        "time_ms": 0.0423,
+        "tflops": 405.91,
+        "status": "ok",
+        "warmup_iterations": 10,
+        "benchmark_iterations": 50
+      },
+      "b8_s1024": {
+        "time_ms": 0.1026,
+        "tflops": 669.91,
+        "status": "ok",
+        "warmup_iterations": 10,
+        "benchmark_iterations": 50
+      },
+      "b8_s2048": {
+        "time_ms": 0.3098,
+        "tflops": 887.4,
+        "status": "ok",
+        "warmup_iterations": 10,
+        "benchmark_iterations": 50
+      },
+      "b8_s4096": {
+        "time_ms": 1.0914,
+        "tflops": 1007.44,
+        "status": "ok",
+        "warmup_iterations": 10,
+        "benchmark_iterations": 50
+      }
+    },
+    "Naive (Unfused)": {
+      "b8_s512": {
+        "time_ms": 0.6847,
+        "tflops": 25.09,
+        "status": "ok",
+        "warmup_iterations": 3,
+        "benchmark_iterations": 10
+      },
+      "b8_s1024": {
+        "time_ms": 2.4677,
+        "tflops": 27.85,
+        "status": "ok",
+        "warmup_iterations": 3,
+        "benchmark_iterations": 10
+      },
+      "b8_s2048": {
+        "time_ms": 10.6709,
+        "tflops": 25.76,
+        "status": "ok",
+        "warmup_iterations": 3,
+        "benchmark_iterations": 10
+      },
+      "b8_s4096": {
+        "time_ms": 44.2583,
+        "tflops": 24.84,
+        "status": "ok",
+        "warmup_iterations": 3,
+        "benchmark_iterations": 10
+      }
+    }
+  },
+  "timestamp": "2026-02-10T04:27:37.750599"
+}

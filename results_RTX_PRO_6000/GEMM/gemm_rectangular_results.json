@@ -1,0 +1,204 @@
+{
+  "title": "Rectangular GEMM Benchmark \u2014 BF16 on NVIDIA RTX PRO 6000 Blackwell Server Edition",
+  "device_config": {
+    "hardware": {
+      "gpu_name": "NVIDIA RTX PRO 6000 Blackwell Server Edition",
+      "compute_capability": "sm_120",
+      "num_sms": 188,
+      "global_memory_gb": 94.98
+    },
+    "software": {
+      "cuda_version": "12.8",
+      "pytorch_version": "2.8.0+cu128",
+      "python_version": "3.12.3",
+      "triton_version": "3.4.0",
+      "cuda_tile_version": "1.1.0",
+      "nvidia_driver": "570.195.03"
+    }
+  },
+  "benchmark_config": {
+    "dtype": "torch.bfloat16",
+    "matrix_type": "rectangular (LLaMA-7B FFN: dim=4096, ffn_dim=11008)",
+    "shapes": [
+      {
+        "M": 2048,
+        "K": 4096,
+        "N": 11008,
+        "label": "FFN_up_seq2048"
+      },
+      {
+        "M": 2048,
+        "K": 11008,
+        "N": 4096,
+        "label": "FFN_down_seq2048"
+      },
+      {
+        "M": 4096,
+        "K": 4096,
+        "N": 11008,
+        "label": "FFN_up_seq4096"
+      },
+      {
+        "M": 4096,
+        "K": 11008,
+        "N": 4096,
+        "label": "FFN_down_seq4096"
+      }
+    ],
+    "warmup_iterations": 10,
+    "benchmark_iterations": 50
+  },
+  "results": {
+    "cuBLAS": {
+      "FFN_up_seq2048": {
+        "time_ms": 0.4893,
+        "tflops": 377.43,
+        "status": "ok",
+        "warmup_iterations": 10,
+        "benchmark_iterations": 50
+      },
+      "FFN_down_seq2048": {
+        "time_ms": 0.4977,
+        "tflops": 371.11,
+        "status": "ok",
+        "warmup_iterations": 10,
+        "benchmark_iterations": 50
+      },
+      "FFN_up_seq4096": {
+        "time_ms": 0.95,
+        "tflops": 388.79,
+        "status": "ok",
+        "warmup_iterations": 10,
+        "benchmark_iterations": 50
+      },
+      "FFN_down_seq4096": {
+        "time_ms": 0.9787,
+        "tflops": 377.41,
+        "status": "ok",
+        "warmup_iterations": 10,
+        "benchmark_iterations": 50
+      }
+    },
+    "Triton": {
+      "FFN_up_seq2048": {
+        "time_ms": 0.5051,
+        "tflops": 365.62,
+        "status": "ok",
+        "warmup_iterations": 10,
+        "benchmark_iterations": 50
+      },
+      "FFN_down_seq2048": {
+        "time_ms": 0.5226,
+        "tflops": 353.39,
+        "status": "ok",
+        "warmup_iterations": 10,
+        "benchmark_iterations": 50
+      },
+      "FFN_up_seq4096": {
+        "time_ms": 0.957,
+        "tflops": 385.96,
+        "status": "ok",
+        "warmup_iterations": 10,
+        "benchmark_iterations": 50
+      },
+      "FFN_down_seq4096": {
+        "time_ms": 0.9926,
+        "tflops": 372.14,
+        "status": "ok",
+        "warmup_iterations": 10,
+        "benchmark_iterations": 50
+      }
+    },
+    "WMMA": {
+      "FFN_up_seq2048": {
+        "time_ms": 1.0095,
+        "tflops": 182.95,
+        "status": "ok",
+        "warmup_iterations": 10,
+        "benchmark_iterations": 50
+      },
+      "FFN_down_seq2048": {
+        "time_ms": 1.0529,
+        "tflops": 175.4,
+        "status": "ok",
+        "warmup_iterations": 10,
+        "benchmark_iterations": 50
+      },
+      "FFN_up_seq4096": {
+        "time_ms": 1.8747,
+        "tflops": 197.03,
+        "status": "ok",
+        "warmup_iterations": 10,
+        "benchmark_iterations": 50
+      },
+      "FFN_down_seq4096": {
+        "time_ms": 2.0181,
+        "tflops": 183.03,
+        "status": "ok",
+        "warmup_iterations": 10,
+        "benchmark_iterations": 50
+      }
+    },
+    "Raw SIMT": {
+      "FFN_up_seq2048": {
+        "time_ms": 31.2055,
+        "tflops": 5.92,
+        "status": "ok",
+        "warmup_iterations": 2,
+        "benchmark_iterations": 3
+      },
+      "FFN_down_seq2048": {
+        "time_ms": 32.4298,
+        "tflops": 5.69,
+        "status": "ok",
+        "warmup_iterations": 2,
+        "benchmark_iterations": 3
+      },
+      "FFN_up_seq4096": {
+        "time_ms": 59.8054,
+        "tflops": 6.18,
+        "status": "ok",
+        "warmup_iterations": 2,
+        "benchmark_iterations": 3
+      },
+      "FFN_down_seq4096": {
+        "time_ms": 62.2387,
+        "tflops": 5.93,
+        "status": "ok",
+        "warmup_iterations": 2,
+        "benchmark_iterations": 3
+      }
+    },
+    "CuTile": {
+      "FFN_up_seq2048": {
+        "time_ms": 0.708,
+        "tflops": 260.85,
+        "status": "ok",
+        "warmup_iterations": 10,
+        "benchmark_iterations": 50
+      },
+      "FFN_down_seq2048": {
+        "time_ms": 0.6689,
+        "tflops": 276.1,
+        "status": "ok",
+        "warmup_iterations": 10,
+        "benchmark_iterations": 50
+      },
+      "FFN_up_seq4096": {
+        "time_ms": 1.246,
+        "tflops": 296.44,
+        "status": "ok",
+        "warmup_iterations": 10,
+        "benchmark_iterations": 50
+      },
+      "FFN_down_seq4096": {
+        "time_ms": 1.3108,
+        "tflops": 281.79,
+        "status": "ok",
+        "warmup_iterations": 10,
+        "benchmark_iterations": 50
+      }
+    }
+  },
+  "timestamp": "2026-02-10T01:33:38.367277"
+}

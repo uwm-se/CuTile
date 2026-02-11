@@ -1,0 +1,124 @@
+{
+  "title": "GEMM Benchmark \u2014 FP16 Square Matrices on NVIDIA RTX PRO 6000 Blackwell Server Edition",
+  "device_config": {
+    "hardware": {
+      "gpu_name": "NVIDIA RTX PRO 6000 Blackwell Server Edition",
+      "compute_capability": "sm_120",
+      "num_sms": 188,
+      "global_memory_gb": 94.98
+    },
+    "software": {
+      "cuda_version": "12.8",
+      "pytorch_version": "2.8.0+cu128",
+      "python_version": "3.12.3",
+      "triton_version": "3.4.0",
+      "cuda_tile_version": "1.1.0",
+      "nvidia_driver": "570.195.03"
+    }
+  },
+  "benchmark_config": {
+    "dtype": "torch.float16",
+    "matrix_type": "square (M=N=K)",
+    "matrix_sizes": [
+      4096,
+      8192,
+      12288,
+      16384
+    ],
+    "warmup_iterations": 10,
+    "benchmark_iterations": 50
+  },
+  "results": {
+    "cuBLAS": {
+      "4096": {
+        "time_ms": 0.4718,
+        "tflops": 291.3,
+        "status": "ok",
+        "warmup_iterations": 10,
+        "benchmark_iterations": 50
+      },
+      "8192": {
+        "time_ms": 3.5516,
+        "tflops": 309.58,
+        "status": "ok",
+        "warmup_iterations": 10,
+        "benchmark_iterations": 50
+      },
+      "12288": {
+        "time_ms": 12.315,
+        "tflops": 301.33,
+        "status": "ok",
+        "warmup_iterations": 10,
+        "benchmark_iterations": 50
+      },
+      "16384": {
+        "time_ms": 29.045,
+        "tflops": 302.84,
+        "status": "ok",
+        "warmup_iterations": 10,
+        "benchmark_iterations": 50
+      }
+    },
+    "Triton": {
+      "4096": {
+        "time_ms": 0.3798,
+        "tflops": 361.85,
+        "status": "ok",
+        "warmup_iterations": 10,
+        "benchmark_iterations": 50
+      },
+      "8192": {
+        "time_ms": 2.9077,
+        "tflops": 378.14,
+        "status": "ok",
+        "warmup_iterations": 10,
+        "benchmark_iterations": 50
+      },
+      "12288": {
+        "time_ms": 9.8826,
+        "tflops": 375.5,
+        "status": "ok",
+        "warmup_iterations": 10,
+        "benchmark_iterations": 50
+      },
+      "16384": {
+        "time_ms": 23.3538,
+        "tflops": 376.64,
+        "status": "ok",
+        "warmup_iterations": 10,
+        "benchmark_iterations": 50
+      }
+    },
+    "CuTile": {
+      "4096": {
+        "time_ms": 0.5279,
+        "tflops": 260.33,
+        "status": "ok",
+        "warmup_iterations": 10,
+        "benchmark_iterations": 50
+      },
+      "8192": {
+        "time_ms": 3.8293,
+        "tflops": 287.13,
+        "status": "ok",
+        "warmup_iterations": 10,
+        "benchmark_iterations": 50
+      },
+      "12288": {
+        "time_ms": 12.9262,
+        "tflops": 287.08,
+        "status": "ok",
+        "warmup_iterations": 10,
+        "benchmark_iterations": 50
+      },
+      "16384": {
+        "time_ms": 30.671,
+        "tflops": 286.79,
+        "status": "ok",
+        "warmup_iterations": 10,
+        "benchmark_iterations": 50
+      }
+    }
+  },
+  "timestamp": "2026-02-10T01:33:51.510283"
+}

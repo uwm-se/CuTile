@@ -1,0 +1,106 @@
+{
+  "hardware": {
+    "gpu": "NVIDIA B200",
+    "architecture": "Blackwell",
+    "compute_capability": "sm_100 (10.0)",
+    "vram": "180 GB HBM3e",
+    "multiprocessors": 148,
+    "max_sm_clock": "1965 MHz",
+    "tdp": "1000W",
+    "driver": "580.126.09",
+    "pcie": "Gen5"
+  },
+  "software": {
+    "cuda_toolkit_primary": "12.8 (PyTorch build)",
+    "cuda_toolkit_tileiras": "13.1 (installed for CuTile tileiras compiler)",
+    "pytorch": "2.8.0+cu128",
+    "triton": "3.4.0",
+    "flash_attn": "2.8.3",
+    "cuda_tile": "1.1.0",
+    "tileiras": "V13.1.80",
+    "python": "3.12.3",
+    "os": "Ubuntu 24.04.3 LTS, kernel 6.8.0-100-generic"
+  },
+  "benchmark_parameters": {
+    "gemm": {
+      "square_sizes": [
+        4096,
+        8192,
+        12288,
+        16384
+      ],
+      "rectangular_shapes": [
+        "2048x4096x11008",
+        "2048x11008x4096",
+        "4096x4096x11008",
+        "4096x11008x4096"
+      ],
+      "dtypes": [
+        "bfloat16",
+        "float16"
+      ],
+      "warmup_iterations": 50,
+      "timed_iterations": 200,
+      "implementations": [
+        "cuBLAS",
+        "Triton",
+        "CuTile",
+        "WMMA",
+        "Raw SIMT"
+      ]
+    },
+    "attention": {
+      "batch_size": 8,
+      "num_heads": 32,
+      "head_dim": 128,
+      "seq_lengths": [
+        512,
+        1024,
+        2048,
+        4096,
+        8192
+      ],
+      "causal": true,
+      "dtypes": [
+        "bfloat16",
+        "float16"
+      ],
+      "implementations": [
+        "FlashAttention-2",
+        "Triton",
+        "CuTile",
+        "cuDNN (SDPA)",
+        "Naive (Unfused)"
+      ]
+    },
+    "e2e_inference": {
+      "model": "LLaMA-7B config (4 layers)",
+      "dim": 4096,
+      "heads": 32,
+      "ffn_dim": 11008,
+      "seq_len": 2048,
+      "batch_sizes": [
+        1,
+        8,
+        32
+      ],
+      "dtype": "bfloat16",
+      "implementations": [
+        "Eager (Naive)",
+        "Eager (SDPA)",
+        "Eager (FA2)",
+        "torch.compile (SDPA)"
+      ]
+    }
+  },
+  "setup_notes": {
+    "cuda_extensions": "Built with CUDA_HOME=/usr/local/cuda-12.8 to match PyTorch CUDA version",
+    "tileiras": "CUDA Toolkit 13.1 installed via apt-get install cuda-toolkit-13-1 for tileiras compiler",
+    "path": "export PATH=/usr/local/cuda-13.1/bin:$PATH for tileiras access at runtime",
+    "wmma_kernel": "NUM_STAGES=2 (48KB shared mem limit per block)",
+    "cutile_gemm": "num_ctas=ByTarget(sm_100=2) \u2014 original default for Blackwell",
+    "cutile_attention": "occupancy=2, latency hints on Q/K/V loads"
+  },
+  "platform": "RunPod (cloud GPU rental)",
+  "timestamp": "2026-02-09T20:39:25.094886"
+}

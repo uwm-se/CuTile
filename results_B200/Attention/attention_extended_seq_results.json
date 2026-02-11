@@ -1,0 +1,75 @@
+{
+  "title": "Attention Benchmark \u2014 BF16 Extended Seq on NVIDIA B200",
+  "device_config": {
+    "hardware": {
+      "gpu_name": "NVIDIA B200",
+      "compute_capability": "sm_100",
+      "num_sms": 148,
+      "global_memory_gb": 178.35
+    },
+    "software": {
+      "cuda_version": "12.8",
+      "pytorch_version": "2.8.0+cu128",
+      "python_version": "3.12.3",
+      "triton_version": "3.4.0",
+      "flash_attn_version": "2.8.3",
+      "cuda_tile_version": "1.1.0",
+      "nvidia_driver": "580.126.09"
+    }
+  },
+  "benchmark_config": {
+    "dtype": "torch.bfloat16",
+    "batch": 8,
+    "num_heads": 32,
+    "head_dim": 128,
+    "seq_lengths": [
+      8192
+    ],
+    "causal": true
+  },
+  "results": {
+    "FlashAttention-2": {
+      "b8_s8192": {
+        "time_ms": 10.4194,
+        "tflops": 422.1,
+        "status": "ok",
+        "warmup_iterations": 10,
+        "benchmark_iterations": 50
+      }
+    },
+    "cuDNN (SDPA)": {
+      "b8_s8192": {
+        "time_ms": 26.3024,
+        "tflops": 167.21,
+        "status": "ok",
+        "warmup_iterations": 10,
+        "benchmark_iterations": 50
+      }
+    },
+    "Triton": {
+      "b8_s8192": {
+        "time_ms": 7.8256,
+        "tflops": 562.01,
+        "status": "ok",
+        "warmup_iterations": 10,
+        "benchmark_iterations": 50
+      }
+    },
+    "CuTile": {
+      "b8_s8192": {
+        "time_ms": 4.3922,
+        "tflops": 1001.34,
+        "status": "ok",
+        "warmup_iterations": 10,
+        "benchmark_iterations": 50
+      }
+    },
+    "Naive (Unfused)": {
+      "b8_s8192": {
+        "status": "skipped",
+        "reason": "OOM risk for N^2 memory at seq=8192"
+      }
+    }
+  },
+  "timestamp": "2026-02-10T04:27:59.387012"
+}

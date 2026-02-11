@@ -1,0 +1,634 @@
+{
+  "collection_date": "2026-02-10T01:33:21.914686",
+  "purpose": "Hardware specification and software versions for benchmark reproducibility",
+  "gpu": {
+    "name": "NVIDIA RTX PRO 6000 Blackwell Server Edition",
+    "driver_version": "570.195.03",
+    "compute_cap": "12.0",
+    "memory_total": "97887 MiB",
+    "clocks_max_sm": "2430 MHz",
+    "clocks_max_mem": "12481 MHz",
+    "power_limit": "600.00 W",
+    "pci_bus_id": "00000000:F4:00.0",
+    "nvidia_smi_cuda_version": "13.1",
+    "product_architecture": "Blackwell",
+    "memory_detail": "==============NVSMI LOG==============\n\nTimestamp                                 : Tue Feb 10 01:33:20 2026\nDriver Version                            : 570.195.03\nCUDA Version                              : 13.1\n\nAttached GPUs                             : 1\nGPU 00000000:F4:00.0\n    FB Memory Usage\n        Total                             : 97887 MiB\n        Reserved                          : 627 MiB\n        Used                              : 0 MiB\n        Free                              : "
+  },
+  "cuda": {
+    "nvcc_version": "nvcc: NVIDIA (R) Cuda compiler driver\nCopyright (c) 2005-2025 NVIDIA Corporation\nBuilt on Tue_Dec_16_07:23:41_PM_PST_2025\nCuda compilation tools, release 13.1, V13.1.115\nBuild cuda_13.1.r13.1/compiler.37061995_0",
+    "installed_cuda_dirs": [
+      "/usr/local/cuda-12",
+      "/usr/local/cuda-12.8",
+      "/usr/local/cuda-13",
+      "/usr/local/cuda-13.0",
+      "/usr/local/cuda-13.1"
+    ],
+    "CUDA_HOME": "not set",
+    "LD_LIBRARY_PATH": "/usr/local/cuda-13.1/compat:/usr/local/cuda-13.1/lib64:",
+    "PATH_cuda_bins": [
+      "/usr/local/cuda-13.1/bin"
+    ],
+    "cuda_compat_packages": "ii  cuda-compat-12-8                575.57.08-0ubuntu1                amd64        CUDA Compatibility Platform\nii  cuda-compat-13-0                580.126.16-1ubuntu1               amd64        CUDA Compatibility Platform\nii  cuda-compat-13-1                590.48.01-0ubuntu1                amd64        CUDA Compatibility Platform"
+  },
+  "python_packages": {
+    "torch": "2.8.0+cu128",
+    "torch_cuda_version": "12.8",
+    "torch_cudnn_version": "91002",
+    "torch_cuda_available": true,
+    "torch_compute_cap": "12.0",
+    "torch_device_name": "NVIDIA RTX PRO 6000 Blackwell Server Edition",
+    "torch_num_sms": 188,
+    "torch_global_mem_bytes": 101984763904,
+    "torch_shared_mem_per_sm": 102400,
+    "torch_max_threads_per_sm": 1536,
+    "triton": "3.4.0",
+    "flash_attn": "2.8.3",
+    "cuda_tile": "1.1.0",
+    "cuda_tile_path": "/usr/local/lib/python3.12/dist-packages/cuda/tile",
+    "numpy": "2.1.2",
+    "cupy": "not installed",
+    "all_pip_packages": [
+      {
+        "name": "anyio",
+        "version": "4.11.0"
+      },
+      {
+        "name": "argon2-cffi",
+        "version": "25.1.0"
+      },
+      {
+        "name": "argon2-cffi-bindings",
+        "version": "25.1.0"
+      },
+      {
+        "name": "arrow",
+        "version": "1.3.0"
+      },
+      {
+        "name": "asttokens",
+        "version": "3.0.0"
+      },
+      {
+        "name": "async-lru",
+        "version": "2.0.5"
+      },
+      {
+        "name": "attrs",
+        "version": "25.4.0"
+      },
+      {
+        "name": "babel",
+        "version": "2.17.0"
+      },
+      {
+        "name": "beautifulsoup4",
+        "version": "4.14.2"
+      },
+      {
+        "name": "bleach",
+        "version": "6.2.0"
+      },
+      {
+        "name": "blinker",
+        "version": "1.7.0"
+      },
+      {
+        "name": "certifi",
+        "version": "2025.10.5"
+      },
+      {
+        "name": "cffi",
+        "version": "2.0.0"
+      },
+      {
+        "name": "charset-normalizer",
+        "version": "3.4.3"
+      },
+      {
+        "name": "comm",
+        "version": "0.2.3"
+      },
+      {
+        "name": "cryptography",
+        "version": "41.0.7"
+      },
+      {
+        "name": "cuda-tile",
+        "version": "1.1.0"
+      },
+      {
+        "name": "dbus-python",
+        "version": "1.3.2"
+      },
+      {
+        "name": "debugpy",
+        "version": "1.8.17"
+      },
+      {
+        "name": "decorator",
+        "version": "5.2.1"
+      },
+      {
+        "name": "defusedxml",
+        "version": "0.7.1"
+      },
+      {
+        "name": "distlib",
+        "version": "0.4.0"
+      },
+      {
+        "name": "distro",
+        "version": "1.9.0"
+      },
+      {
+        "name": "einops",
+        "version": "0.8.2"
+      },
+      {
+        "name": "executing",
+        "version": "2.2.1"
+      },
+      {
+        "name": "fastjsonschema",
+        "version": "2.21.2"
+      },
+      {
+        "name": "filelock",
+        "version": "3.20.0"
+      },
+      {
+        "name": "flash_attn",
+        "version": "2.8.3"
+      },
+      {
+        "name": "fqdn",
+        "version": "1.5.1"
+      },
+      {
+        "name": "fsspec",
+        "version": "2024.6.1"
+      },
+      {
+        "name": "h11",
+        "version": "0.16.0"
+      },
+      {
+        "name": "httpcore",
+        "version": "1.0.9"
+      },
+      {
+        "name": "httplib2",
+        "version": "0.20.4"
+      },
+      {
+        "name": "httpx",
+        "version": "0.28.1"
+      },
+      {
+        "name": "idna",
+        "version": "3.10"
+      },
+      {
+        "name": "ipykernel",
+        "version": "6.30.1"
+      },
+      {
+        "name": "ipython",
+        "version": "9.6.0"
+      },
+      {
+        "name": "ipython_pygments_lexers",
+        "version": "1.1.1"
+      },
+      {
+        "name": "ipywidgets",
+        "version": "8.1.7"
+      },
+      {
+        "name": "isoduration",
+        "version": "20.11.0"
+      },
+      {
+        "name": "jedi",
+        "version": "0.19.2"
+      },
+      {
+        "name": "Jinja2",
+        "version": "3.1.6"
+      },
+      {
+        "name": "json5",
+        "version": "0.12.1"
+      },
+      {
+        "name": "jsonpointer",
+        "version": "3.0.0"
+      },
+      {
+        "name": "jsonschema",
+        "version": "4.25.1"
+      },
+      {
+        "name": "jsonschema-specifications",
+        "version": "2025.9.1"
+      },
+      {
+        "name": "jupyter-archive",
+        "version": "3.4.0"
+      },
+      {
+        "name": "jupyter_client",
+        "version": "8.6.3"
+      },
+      {
+        "name": "jupyter_core",
+        "version": "5.8.1"
+      },
+      {
+        "name": "jupyter-events",
+        "version": "0.12.0"
+      },
+      {
+        "name": "jupyter-lsp",
+        "version": "2.3.0"
+      },
+      {
+        "name": "jupyter_server",
+        "version": "2.17.0"
+      },
+      {
+        "name": "jupyter_server_terminals",
+        "version": "0.5.3"
+      },
+      {
+        "name": "jupyterlab",
+        "version": "4.4.9"
+      },
+      {
+        "name": "jupyterlab_pygments",
+        "version": "0.3.0"
+      },
+      {
+        "name": "jupyterlab_server",
+        "version": "2.27.3"
+      },
+      {
+        "name": "jupyterlab_widgets",
+        "version": "3.0.15"
+      },
+      {
+        "name": "lark",
+        "version": "1.3.0"
+      },
+      {
+        "name": "launchpadlib",
+        "version": "1.11.0"
+      },
+      {
+        "name": "lazr.restfulclient",
+        "version": "0.14.6"
+      },
+      {
+        "name": "lazr.uri",
+        "version": "1.0.6"
+      },
+      {
+        "name": "MarkupSafe",
+        "version": "3.0.3"
+      },
+      {
+        "name": "matplotlib-inline",
+        "version": "0.1.7"
+      },
+      {
+        "name": "mistune",
+        "version": "3.1.4"
+      },
+      {
+        "name": "mpmath",
+        "version": "1.3.0"
+      },
+      {
+        "name": "nbclient",
+        "version": "0.10.2"
+      },
+      {
+        "name": "nbconvert",
+        "version": "7.16.6"
+      },
+      {
+        "name": "nbformat",
+        "version": "5.10.4"
+      },
+      {
+        "name": "nest-asyncio",
+        "version": "1.6.0"
+      },
+      {
+        "name": "networkx",
+        "version": "3.3"
+      },
+      {
+        "name": "notebook",
+        "version": "7.4.2"
+      },
+      {
+        "name": "notebook_shim",
+        "version": "0.2.4"
+      },
+      {
+        "name": "numpy",
+        "version": "2.1.2"
+      },
+      {
+        "name": "nvidia-cublas-cu12",
+        "version": "12.8.4.1"
+      },
+      {
+        "name": "nvidia-cuda-cupti-cu12",
+        "version": "12.8.90"
+      },
+      {
+        "name": "nvidia-cuda-nvrtc-cu12",
+        "version": "12.8.93"
+      },
+      {
+        "name": "nvidia-cuda-runtime-cu12",
+        "version": "12.8.90"
+      },
+      {
+        "name": "nvidia-cudnn-cu12",
+        "version": "9.10.2.21"
+      },
+      {
+        "name": "nvidia-cufft-cu12",
+        "version": "11.3.3.83"
+      },
+      {
+        "name": "nvidia-cufile-cu12",
+        "version": "1.13.1.3"
+      },
+      {
+        "name": "nvidia-curand-cu12",
+        "version": "10.3.9.90"
+      },
+      {
+        "name": "nvidia-cusolver-cu12",
+        "version": "11.7.3.90"
+      },
+      {
+        "name": "nvidia-cusparse-cu12",
+        "version": "12.5.8.93"
+      },
+      {
+        "name": "nvidia-cusparselt-cu12",
+        "version": "0.7.1"
+      },
+      {
+        "name": "nvidia-nccl-cu12",
+        "version": "2.27.3"
+      },
+      {
+        "name": "nvidia-nvjitlink-cu12",
+        "version": "12.8.93"
+      },
+      {
+        "name": "nvidia-nvtx-cu12",
+        "version": "12.8.90"
+      },
+      {
+        "name": "oauthlib",
+        "version": "3.2.2"
+      },
+      {
+        "name": "packaging",
+        "version": "25.0"
+      },
+      {
+        "name": "pandocfilters",
+        "version": "1.5.1"
+      },
+      {
+        "name": "parso",
+        "version": "0.8.5"
+      },
+      {
+        "name": "pexpect",
+        "version": "4.9.0"
+      },
+      {
+        "name": "pillow",
+        "version": "11.0.0"
+      },
+      {
+        "name": "pip",
+        "version": "25.2"
+      },
+      {
+        "name": "platformdirs",
+        "version": "4.5.0"
+      },
+      {
+        "name": "prometheus_client",
+        "version": "0.23.1"
+      },
+      {
+        "name": "prompt_toolkit",
+        "version": "3.0.52"
+      },
+      {
+        "name": "psutil",
+        "version": "7.1.0"
+      },
+      {
+        "name": "ptyprocess",
+        "version": "0.7.0"
+      },
+      {
+        "name": "pure_eval",
+        "version": "0.2.3"
+      },
+      {
+        "name": "pycparser",
+        "version": "2.23"
+      },
+      {
+        "name": "Pygments",
+        "version": "2.19.2"
+      },
+      {
+        "name": "PyGObject",
+        "version": "3.48.2"
+      },
+      {
+        "name": "PyJWT",
+        "version": "2.7.0"
+      },
+      {
+        "name": "pyparsing",
+        "version": "3.1.1"
+      },
+      {
+        "name": "python-apt",
+        "version": "2.7.7+ubuntu5"
+      },
+      {
+        "name": "python-dateutil",
+        "version": "2.9.0.post0"
+      },
+      {
+        "name": "python-json-logger",
+        "version": "4.0.0"
+      },
+      {
+        "name": "PyYAML",
+        "version": "6.0.3"
+      },
+      {
+        "name": "pyzmq",
+        "version": "27.1.0"
+      },
+      {
+        "name": "referencing",
+        "version": "0.36.2"
+      },
+      {
+        "name": "requests",
+        "version": "2.32.5"
+      },
+      {
+        "name": "rfc3339-validator",
+        "version": "0.1.4"
+      },
+      {
+        "name": "rfc3986-validator",
+        "version": "0.1.1"
+      },
+      {
+        "name": "rfc3987-syntax",
+        "version": "1.1.0"
+      },
+      {
+        "name": "rpds-py",
+        "version": "0.27.1"
+      },
+      {
+        "name": "Send2Trash",
+        "version": "1.8.3"
+      },
+      {
+        "name": "setuptools",
+        "version": "80.9.0"
+      },
+      {
+        "name": "six",
+        "version": "1.16.0"
+      },
+      {
+        "name": "sniffio",
+        "version": "1.3.1"
+      },
+      {
+        "name": "soupsieve",
+        "version": "2.8"
+      },
+      {
+        "name": "stack-data",
+        "version": "0.6.3"
+      },
+      {
+        "name": "sympy",
+        "version": "1.13.3"
+      },
+      {
+        "name": "terminado",
+        "version": "0.18.1"
+      },
+      {
+        "name": "tinycss2",
+        "version": "1.4.0"
+      },
+      {
+        "name": "torch",
+        "version": "2.8.0+cu128"
+      },
+      {
+        "name": "torchaudio",
+        "version": "2.8.0+cu128"
+      },
+      {
+        "name": "torchvision",
+        "version": "0.23.0+cu128"
+      },
+      {
+        "name": "tornado",
+        "version": "6.5.2"
+      },
+      {
+        "name": "traitlets",
+        "version": "5.14.3"
+      },
+      {
+        "name": "triton",
+        "version": "3.4.0"
+      },
+      {
+        "name": "types-python-dateutil",
+        "version": "2.9.0.20251008"
+      },
+      {
+        "name": "typing_extensions",
+        "version": "4.15.0"
+      },
+      {
+        "name": "uri-template",
+        "version": "1.3.0"
+      },
+      {
+        "name": "urllib3",
+        "version": "2.5.0"
+      },
+      {
+        "name": "virtualenv",
+        "version": "20.34.0"
+      },
+      {
+        "name": "wadllib",
+        "version": "1.3.6"
+      },
+      {
+        "name": "wcwidth",
+        "version": "0.2.14"
+      },
+      {
+        "name": "webcolors",
+        "version": "24.11.1"
+      },
+      {
+        "name": "webencodings",
+        "version": "0.5.1"
+      },
+      {
+        "name": "websocket-client",
+        "version": "1.9.0"
+      },
+      {
+        "name": "widgetsnbextension",
+        "version": "4.0.14"
+      }
+    ]
+  },
+  "system": {
+    "hostname": "25d00cd275af",
+    "os": "Linux",
+    "os_release": "6.8.0-86-generic",
+    "os_version": "#87-Ubuntu SMP PREEMPT_DYNAMIC Mon Sep 22 18:03:36 UTC 2025",
+    "architecture": "x86_64",
+    "python_version": "3.12.3",
+    "python_implementation": "CPython",
+    "lscpu": "Architecture:                         x86_64\nCPU op-mode(s):                       32-bit, 64-bit\nAddress sizes:                        52 bits physical, 57 bits virtual\nByte Order:                           Little Endian\nCPU(s):                               224\nOn-line CPU(s) list:                  0-223\nVendor ID:                            AuthenticAMD\nModel name:                           AMD EPYC 9655 96-Core Processor\nCPU family:                           26\nModel:                                2\nThread(s) per core:                   2\nCore(s) per socket:                   56\nSocket(s):                            2\nStepping:                             1\nFrequency boost:                      enabled\nCPU(s) scaling MHz:                   62%\nCPU max MHz:                          2600.0000\nCPU min MHz:                          1500.0000\nBogoMIPS:                             5199.82\nFlags:                                fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov",
+    "memory": "total        used        free      shared  buff/cache   available\nMem:           2.2Ti       215Gi       822Gi        20Gi       1.2Ti       2.0Ti\nSwap:             0B          0B          0B",
+    "os_release_file": "PRETTY_NAME=\"Ubuntu 24.04.3 LTS\"\nNAME=\"Ubuntu\"\nVERSION_ID=\"24.04\"\nVERSION=\"24.04.3 LTS (Noble Numbat)\"\nVERSION_CODENAME=noble\nID=ubuntu\nID_LIKE=debian\nHOME_URL=\"https://www.ubuntu.com/\"\nSUPPORT_URL=\"https://help.ubuntu.com/\"\nBUG_REPORT_URL=\"https://bugs.launchpad.net/ubuntu/\"\nPRIVACY_POLICY_URL=\"https://www.ubuntu.com/legal/terms-and-policies/privacy-policy\"\nUBUNTU_CODENAME=noble\nLOGO=ubuntu-logo",
+    "kernel": "Linux 25d00cd275af 6.8.0-86-generic #87-Ubuntu SMP PREEMPT_DYNAMIC Mon Sep 22 18:03:36 UTC 2025 x86_64 x86_64 x86_64 GNU/Linux"
+  }
+}

@@ -1,0 +1,192 @@
+{
+  "paper_readiness_analysis": {
+    "date": "2026-02-10",
+    "target_gpus": ["NVIDIA RTX PRO 6000 Blackwell Server Edition (sm_120)", "NVIDIA B100 or B200 (datacenter Blackwell)"],
+    "paper_title_suggestion": "CUDA Tile versus Traditional Kernels: A Comprehensive Performance Evaluation on Blackwell GPUs for Large Language Model Inference"
+  },
+
+  "benchmarks_completed_RTX_PRO_6000": {
+    "GEMM": {
+      "status": "COMPLETE",
+      "implementations": ["cuBLAS", "Triton", "WMMA", "Raw SIMT", "CuTile"],
+      "matrix_sizes": [4096, 8192, 12288, 16384],
+      "dtype": "BF16",
+      "highlights": {
+        "cuBLAS_peak_tflops": 393.0,
+        "Triton_peak_tflops": 389.1,
+        "CuTile_peak_tflops": 302.1,
+        "WMMA_peak_tflops": 193.9,
+        "Raw_SIMT_peak_tflops": 5.9,
+        "CuTile_vs_cuBLAS": "76.9% of cuBLAS (0.77x)",
+        "CuTile_vs_Triton": "77.6% of Triton (0.78x)",
+        "CuTile_vs_WMMA": "1.56x faster than WMMA",
+        "CuTile_vs_Raw_SIMT": "52.7x faster than Raw SIMT"
+      }
+    },
+    "Attention": {
+      "status": "COMPLETE",
+      "implementations": ["FlashAttention-2", "cuDNN (SDPA)", "Triton", "CuTile", "Naive (Unfused)"],
+      "seq_lengths": [512, 1024, 2048, 4096],
+      "batch": 8,
+      "heads": 32,
+      "head_dim": 128,
+      "dtype": "BF16",
+      "highlights": {
+        "FA2_peak_tflops": 335.8,
+        "Triton_peak_tflops": 287.9,
+        "CuTile_peak_tflops": 178.8,
+        "cuDNN_peak_tflops": 132.9,
+        "Naive_peak_tflops": 10.8,
+        "CuTile_vs_FA2": "53.3% of FA2 (0.53x)",
+        "CuTile_vs_Triton": "62.1% of Triton (0.62x)",
+        "CuTile_vs_cuDNN": "1.35x faster than cuDNN SDPA",
+        "CuTile_vs_Naive": "16.6x faster than Naive"
+      }
+    },
+    "E2E_Inference": {
+      "status": "COMPLETE",
+      "implementations": ["Eager (Naive)", "Eager (SDPA)", "Eager (FA2)", "torch.compile (SDPA)"],
+      "model": "LLaMA-7B architecture (4 layers)",
+      "dtype": "BF16",
+      "prefill_seq_len": 2048,
+      "decode_context_len": 2048,
+      "highlights": {
+        "best_prefill_tflops": "279.5 (torch.compile SDPA)",
+        "best_prefill_tokens_per_sec": "165,765 (torch.compile SDPA)",
+        "best_decode_ms_per_token": "1.762 (torch.compile SDPA)",
+        "naive_vs_sdpa_prefill_speedup": "2.03x",
+        "naive_vs_compile_prefill_speedup": "2.05x"
+      }
+    },
+    "LOC_Comparison": {
+      "status": "COMPLETE",
+      "note": "Hardware-independent (code line counts). Already collected."
+    }
+  },
+
+  "critical_paper_narrative_finding": {
+    "summary": "CuTile does NOT beat cuBLAS/FA2/Triton on RTX PRO 6000 Blackwell — it achieves 53-77% of their performance.",
+    "detail": "This is actually a MORE interesting and publishable finding than 'CuTile wins'. The paper narrative should shift from 'CuTile is faster' to 'CuTile provides a significantly simpler programming model (3-5x less code) with reasonable performance, and we analyze WHY it doesn't match tuned baselines yet.'",
+    "key_insight_1": "CuTile GEMM achieved only 77% of cuBLAS despite both using Tensor Cores and TMA — the gap comes from cuBLAS's hand-tuned persistent kernels and deep pipelining.",
+    "key_insight_2": "CuTile FMHA achieved only 53% of FlashAttention-2 — FA2 has years of optimization on specific attention patterns, while CuTile's compiler is early-stage.",
+    "key_insight_3": "CuTile's ByTarget abstraction is LEAKY — missing sm_120 in ByTarget caused a 4x slowdown, undermining the 'write once, run everywhere' claim.",
+    "key_insight_4": "CuTile still beat WMMA (1.56x) and cuDNN SDPA (1.35x), showing its value versus non-bleeding-edge baselines."
+  },
+
+  "what_paper_draft_claims_vs_reality": {
+    "claim_1": {
+      "paper_draft": "CuTile achieves 9-26% higher prefill throughput than CUTLASS/FlashAttn-2",
+      "reality": "CuTile GEMM is 23% SLOWER than cuBLAS, CuTile FMHA is 47% SLOWER than FA2",
+      "action": "REWRITE: Paper must report honest results. The finding is about productivity vs performance tradeoff."
+    },
+    "claim_2": {
+      "paper_draft": "3.2-5.8x code reduction",
+      "reality": "VERIFIED. WMMA: 183 LOC vs CuTile GEMM: 45 LOC = 4.1x reduction. Triton Attn: 87 LOC vs CuTile FMHA: 95 LOC = 0.9x (CuTile is slightly MORE code than Triton for attention).",
+      "action": "Report honestly. CuTile vs CUDA C++ is significant. CuTile vs Triton is a wash."
+    },
+    "claim_3": {
+      "paper_draft": "True cross-generation portability (same code on H100 and A100)",
+      "reality": "NOT TESTED. We only ran on RTX PRO 6000. Paper claims A100/H100 — those are not our target GPUs.",
+      "action": "Change to RTX PRO 6000 + B100/B200 portability story."
+    },
+    "claim_4": {
+      "paper_draft": "CUTLASS 3.2 baselines",
+      "reality": "We did NOT benchmark CUTLASS. We used cuBLAS (torch.matmul) and Triton. These are sufficient baselines.",
+      "action": "Remove CUTLASS references or add CUTLASS benchmarks."
+    },
+    "claim_5": {
+      "paper_draft": "vLLM integration with pluggable backends",
+      "reality": "NOT DONE. Our E2E benchmark uses a custom 4-layer LLaMA-7B model, not vLLM.",
+      "action": "Remove vLLM claims. Our custom model approach is fine but should be described accurately."
+    },
+    "claim_6": {
+      "paper_draft": "LLaMA-13B, Mistral-7B, long-context (8K-16K tokens)",
+      "reality": "Only LLaMA-7B config (4 layers) tested. No 13B or Mistral.",
+      "action": "Either add more models or scope paper to LLaMA-7B."
+    },
+    "claim_7": {
+      "paper_draft": "Nsight Compute roofline analysis",
+      "reality": "NOT DONE. We only have TFLOP/s and time_ms.",
+      "action": "Either add ncu profiling or remove these claims."
+    },
+    "claim_8": {
+      "paper_draft": "MLP kernels (FC1 + SiLU + FC2)",
+      "reality": "NOT IMPLEMENTED. No MLP benchmark code exists.",
+      "action": "Either add MLP benchmarks or remove from paper."
+    }
+  },
+
+  "missing_benchmarks_for_paper": {
+    "critical": [
+      {
+        "name": "MLP Fused Kernel Benchmark",
+        "description": "Paper Section 4.1 mentions MLP kernels (FC1 + SiLU/SwiGLU + FC2). No code or results exist.",
+        "effort": "HIGH - need to write CuTile MLP kernel + baselines",
+        "recommendation": "REMOVE from paper scope if time is limited. Our 3 benchmarks (GEMM, Attention, E2E) are sufficient."
+      }
+    ],
+    "important_but_not_blocking": [
+      {
+        "name": "Rectangular GEMM shapes",
+        "description": "Paper mentions batch×32×4096 × 4096×4096 (FFN projection). We only tested square.",
+        "effort": "LOW - just add sizes to MATRIX_SIZES in existing code",
+        "recommendation": "ADD. Easy to do, adds value."
+      },
+      {
+        "name": "Multiple batch sizes for E2E",
+        "description": "Paper shows batch=1,8,32 results. We only have batch=1.",
+        "effort": "LOW - modify BATCH_SIZE in E2E benchmark",
+        "recommendation": "ADD batch=8 and batch=32 runs."
+      },
+      {
+        "name": "FP16 benchmarks",
+        "description": "Paper mentions FP16/BF16. We only have BF16.",
+        "effort": "LOW - change dtype to torch.float16",
+        "recommendation": "ADD. Good for comparison."
+      }
+    ],
+    "nice_to_have": [
+      {
+        "name": "Nsight Compute profiling",
+        "description": "Roofline analysis, Tensor Core utilization %, memory bandwidth.",
+        "effort": "MEDIUM - need ncu on the pod",
+        "recommendation": "ADD if time permits. Strong for paper quality."
+      },
+      {
+        "name": "CUTLASS baselines",
+        "description": "Paper mentions CUTLASS 3.2 but we used cuBLAS/Triton instead.",
+        "effort": "HIGH - need to set up CUTLASS Python bindings",
+        "recommendation": "SKIP. cuBLAS is a stronger baseline than CUTLASS anyway."
+      },
+      {
+        "name": "Longer sequence lengths",
+        "description": "Paper mentions 8192 and 16384 token prefill.",
+        "effort": "LOW - just extend SEQ_LENGTHS",
+        "recommendation": "ADD for attention. May need more VRAM."
+      }
+    ]
+  },
+
+  "recommended_paper_rewrite_outline": {
+    "new_title": "Evaluating NVIDIA CuTile: Performance and Productivity Tradeoffs for GPU Kernel Programming on Blackwell Architecture",
+    "narrative_shift": "From 'CuTile wins' to 'Honest evaluation showing CuTile offers significant code simplicity with a current performance gap, analyzed in depth'",
+    "sections": {
+      "1_Introduction": "Motivation: LLM inference needs high-perf kernels. CuTile promises simpler code. We evaluate on Blackwell hardware.",
+      "2_Related_Work": "Keep mostly as-is. Add CuTile references.",
+      "3_Background": "CuTile programming model + our experimental setup (RTX PRO 6000 + B100/B200)",
+      "4_Methodology": "GEMM (5 implementations), Attention (5 implementations), E2E Inference (4 modes). Clear metrics.",
+      "5_Results": "Tables with TFLOP/s for each. CuTile vs baselines. Honest: CuTile is 53-77% of best baselines.",
+      "6_Analysis": "WHY CuTile underperforms: compiler maturity, ByTarget leaky abstraction, early-stage runtime. LOC comparison showing 3-5x code reduction.",
+      "7_Cross_Architecture": "Same code on RTX PRO 6000 vs B100/B200 (when available)",
+      "8_Conclusion": "CuTile is promising for productivity but not yet performance-competitive with mature libraries. Future compiler improvements could close the gap."
+    }
+  },
+
+  "immediate_next_steps": [
+    "1. Add rectangular GEMM shapes (4096x11008, 11008x4096) - paper Table 1",
+    "2. Add batch=8,32 to E2E Inference",
+    "3. Run same benchmarks on B100 or B200 for cross-architecture comparison",
+    "4. REWRITE paper draft to match actual results (not projected numbers)",
+    "5. Add FP16 dtype benchmarks for comparison with BF16"
+  ]
+}

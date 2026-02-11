@@ -1,0 +1,161 @@
+{
+  "reproducibility_config": {
+    "description": "Complete hardware, software, and environment configuration for reproducing benchmark results on NVIDIA RTX PRO 6000 Blackwell Server Edition.",
+    "date_collected": "2026-02-10",
+    "platform": "RunPod (runpod.io)"
+  },
+
+  "hardware": {
+    "gpu": {
+      "name": "NVIDIA RTX PRO 6000 Blackwell Server Edition",
+      "architecture": "Blackwell",
+      "compute_capability": "sm_120 (12.0)",
+      "num_sms": 188,
+      "max_threads_per_sm": 1536,
+      "shared_memory_per_sm_kb": 100.0,
+      "global_memory_mb": 97887,
+      "global_memory_gb": 95.6,
+      "memory_bus_width_bit": "not confirmed (run nvidia-smi -q for full spec)",
+      "max_sm_clock_mhz": 2430,
+      "max_memory_clock_mhz": 12481,
+      "max_power_limit_watts": 600,
+      "pci_bus_id": "00000000:F4:00.0",
+      "persistence_mode": "On",
+      "ecc_mode": "0 (disabled)"
+    },
+    "cpu": {
+      "model": "AMD EPYC 9655 96-Core Processor",
+      "architecture": "x86_64"
+    },
+    "system_memory": {
+      "total": "2.2 TiB",
+      "note": "Shared across multi-GPU node; single GPU pod allocation"
+    }
+  },
+
+  "software": {
+    "os": {
+      "distribution": "Ubuntu 24.04.3 LTS (Noble Numbat)",
+      "kernel": "6.8.0-86-generic",
+      "full_uname": "Linux 6.8.0-86-generic #87-Ubuntu SMP PREEMPT_DYNAMIC Mon Sep 22 18:03:36 UTC 2025 x86_64"
+    },
+    "nvidia_driver": {
+      "version": "570.195.03",
+      "cuda_driver_api_version": "12.8",
+      "note": "Host driver; CuTile requires >= 13.0, provided via cuda-compat"
+    },
+    "cuda": {
+      "cuda_toolkit_versions_installed": ["12.8", "13.0", "13.1"],
+      "primary_cuda_for_pytorch": "12.8",
+      "cuda_for_cutile": "13.1 (via cuda-compat-13-1)",
+      "cuda_compat_packages": {
+        "cuda-compat-12-8": "575.57.08-0ubuntu1",
+        "cuda-compat-13-0": "580.126.16-1ubuntu1",
+        "cuda-compat-13-1": "590.48.01-0ubuntu1"
+      }
+    },
+    "python": {
+      "version": "3.12.3"
+    },
+    "pytorch": {
+      "version": "2.8.0+cu128",
+      "cuda_version_bundled": "12.8"
+    },
+    "triton": {
+      "version": "3.4.0"
+    },
+    "flash_attn": {
+      "version": "2.8.3"
+    },
+    "cuda_tile": {
+      "pip_package_version": "1.1.0",
+      "module_path": "/usr/local/lib/python3.12/dist-packages/cuda/tile/__init__.py",
+      "tileiras_compiler": "/usr/local/cuda-13.1/bin/tileiras",
+      "tileiras_runtime_lib": "/usr/local/cuda-13.1/compat/libnvidia-tileiras.so.590.48.01"
+    },
+    "numpy": "2.1.2",
+    "cudnn_version_code": 91002
+  },
+
+  "environment_setup": {
+    "description": "Critical environment variables required to run CuTile on this pod",
+    "LD_LIBRARY_PATH": "/usr/local/cuda-13.1/compat:/usr/local/cuda-13.1/lib64:${original_LD_LIBRARY_PATH}",
+    "PATH": "/usr/local/cuda-13.1/bin:${original_PATH}",
+    "note": "CuTile requires CUDA 13.1 compat libraries to override the host driver 12.8. Without this LD_LIBRARY_PATH, CuTile will fail with 'Minimum driver version required is 13.0, got 12.8'."
+  },
+
+  "benchmark_parameters": {
+    "GEMM": {
+      "matrix_sizes": [4096, 8192, 12288, 16384],
+      "matrix_type": "square (M=N=K)",
+      "dtype": "torch.bfloat16",
+      "warmup_iterations": 10,
+      "benchmark_iterations": 50,
+      "raw_simt_warmup": 2,
+      "raw_simt_iterations": 3,
+      "flop_counting": "2 * M * N * K",
+      "timing_method": "CUDA events (torch.cuda.Event, enable_timing=True)",
+      "implementations": ["cuBLAS", "Triton", "WMMA", "Raw SIMT", "CuTile"]
+    },
+    "Attention": {
+      "batch_sizes": [8],
+      "num_heads": 32,
+      "head_dim": 128,
+      "seq_lengths": [512, 1024, 2048, 4096],
+      "causal": true,
+      "dtype": "torch.bfloat16",
+      "model_reference": "LLaMA-7B-like (32 heads, d=128)",
+      "warmup_iterations": 10,
+      "benchmark_iterations": 50,
+      "naive_warmup": 3,
+      "naive_iterations": 10,
+      "flop_counting": "4 * B * H * N^2 * D (causal: /2)",
+      "timing_method": "CUDA events",
+      "implementations": ["FlashAttention-2", "cuDNN (SDPA)", "Triton", "CuTile", "Naive (Unfused)"]
+    },
+    "E2E_Inference": {
+      "model": "LLaMA-7B architecture (4 layers for benchmark)",
+      "dim": 4096,
+      "num_heads": 32,
+      "head_dim": 128,
+      "ffn_dim": 11008,
+      "num_layers": 4,
+      "dtype": "torch.bfloat16",
+      "prefill_seq_len": 2048,
+      "decode_context_len": 2048,
+      "batch_size": 1,
+      "warmup_iterations": 5,
+      "prefill_iterations": 20,
+      "decode_iterations": 50,
+      "implementations": ["Eager (Naive)", "Eager (SDPA)", "Eager (FA2)", "torch.compile (SDPA)"]
+    }
+  },
+
+  "cutile_specific_config": {
+    "GEMM_kernel_decorator": "@ct.kernel(num_ctas=ct.ByTarget(sm_100=2, sm_120=2))",
+    "GEMM_tile_sizes_bf16": {"tm": 128, "tn": 256, "tk": 64},
+    "GEMM_tile_sizes_fp32": {"tm": 32, "tn": 32, "tk": 32},
+    "GEMM_load_latency_hint": 4,
+    "GEMM_swizzle_group_size": 8,
+    "Attention_kernel_decorator": "@ct.kernel(occupancy=2)",
+    "Attention_tile_m": 128,
+    "Attention_tile_n": 128,
+    "Attention_Q_load_latency": 2,
+    "Attention_K_load_latency": 2,
+    "Attention_V_load_latency": 4,
+    "note_sm_120_fix": "Original code had num_ctas=ct.ByTarget(sm_100=2) which MISSED sm_120, causing 4x slowdown. Fixed by adding sm_120=2."
+  },
+
+  "wmma_kernel_fix": {
+    "issue": "Original wmma_kernel.cu used NUM_STAGES=3 (triple buffering) requiring 56KB shared memory, exceeding sm_120's 48KB per-block limit.",
+    "fix": "Reduced NUM_STAGES from 3 to 2 (double buffering), bringing shared memory to ~38KB.",
+    "file": "GEMM/wmma_kernel.cu"
+  },
+
+  "known_hardware_differences_from_paper_draft": {
+    "note": "The paper draft references H100/A100. Actual benchmarks run on RTX PRO 6000 Blackwell Server Edition.",
+    "architecture": "Blackwell (sm_120) instead of Hopper (sm_90) or Ampere (sm_80)",
+    "peak_bf16_tensor_core_tflops_dense": "835 (hardcoded in benchmark scripts — needs verification for RTX PRO 6000)",
+    "action_needed": "Update paper and benchmark scripts to reflect actual GPU specs"
+  }
+}

@@ -1,0 +1,156 @@
+{
+  "title": "Attention Benchmark \u2014 FP16 Causal on NVIDIA H100 NVL",
+  "device_config": {
+    "hardware": {
+      "gpu_name": "NVIDIA H100 NVL",
+      "compute_capability": "sm_90",
+      "num_sms": 132,
+      "global_memory_gb": 93.09
+    },
+    "software": {
+      "cuda_version": "12.6",
+      "pytorch_version": "2.7.1+cu126",
+      "python_version": "3.12.3",
+      "triton_version": "3.3.1",
+      "flash_attn_version": "2.8.3",
+      "cuda_tile_version": "N/A",
+      "nvidia_driver": "580.105.08"
+    }
+  },
+  "benchmark_config": {
+    "dtype": "torch.float16",
+    "batch": 8,
+    "num_heads": 32,
+    "head_dim": 128,
+    "seq_lengths": [
+      512,
+      1024,
+      2048,
+      4096
+    ],
+    "causal": true
+  },
+  "results": {
+    "FlashAttention-2": {
+      "b8_s512": {
+        "time_ms": 0.1062,
+        "tflops": 161.77,
+        "status": "ok",
+        "warmup_iterations": 10,
+        "benchmark_iterations": 50
+      },
+      "b8_s1024": {
+        "time_ms": 0.3144,
+        "tflops": 218.57,
+        "status": "ok",
+        "warmup_iterations": 10,
+        "benchmark_iterations": 50
+      },
+      "b8_s2048": {
+        "time_ms": 1.1183,
+        "tflops": 245.79,
+        "status": "ok",
+        "warmup_iterations": 10,
+        "benchmark_iterations": 50
+      },
+      "b8_s4096": {
+        "time_ms": 4.3118,
+        "tflops": 255.0,
+        "status": "ok",
+        "warmup_iterations": 10,
+        "benchmark_iterations": 50
+      }
+    },
+    "cuDNN (SDPA)": {
+      "b8_s512": {
+        "time_ms": 0.1719,
+        "tflops": 99.93,
+        "status": "ok",
+        "warmup_iterations": 10,
+        "benchmark_iterations": 50
+      },
+      "b8_s1024": {
+        "time_ms": 0.6184,
+        "tflops": 111.12,
+        "status": "ok",
+        "warmup_iterations": 10,
+        "benchmark_iterations": 50
+      },
+      "b8_s2048": {
+        "time_ms": 2.2703,
+        "tflops": 121.07,
+        "status": "ok",
+        "warmup_iterations": 10,
+        "benchmark_iterations": 50
+      },
+      "b8_s4096": {
+        "time_ms": 8.3581,
+        "tflops": 131.55,
+        "status": "ok",
+        "warmup_iterations": 10,
+        "benchmark_iterations": 50
+      }
+    },
+    "Triton": {
+      "b8_s512": {
+        "time_ms": 0.1044,
+        "tflops": 164.6,
+        "status": "ok",
+        "warmup_iterations": 10,
+        "benchmark_iterations": 50
+      },
+      "b8_s1024": {
+        "time_ms": 0.3635,
+        "tflops": 189.04,
+        "status": "ok",
+        "warmup_iterations": 10,
+        "benchmark_iterations": 50
+      },
+      "b8_s2048": {
+        "time_ms": 1.3195,
+        "tflops": 208.32,
+        "status": "ok",
+        "warmup_iterations": 10,
+        "benchmark_iterations": 50
+      },
+      "b8_s4096": {
+        "time_ms": 4.6695,
+        "tflops": 235.47,
+        "status": "ok",
+        "warmup_iterations": 10,
+        "benchmark_iterations": 50
+      }
+    },
+    "Naive (Unfused)": {
+      "b8_s512": {
+        "time_ms": 0.9078,
+        "tflops": 18.92,
+        "status": "ok",
+        "warmup_iterations": 3,
+        "benchmark_iterations": 10
+      },
+      "b8_s1024": {
+        "time_ms": 3.6366,
+        "tflops": 18.9,
+        "status": "ok",
+        "warmup_iterations": 3,
+        "benchmark_iterations": 10
+      },
+      "b8_s2048": {
+        "time_ms": 15.3917,
+        "tflops": 17.86,
+        "status": "ok",
+        "warmup_iterations": 3,
+        "benchmark_iterations": 10
+      },
+      "b8_s4096": {
+        "time_ms": 67.5486,
+        "tflops": 16.28,
+        "status": "ok",
+        "warmup_iterations": 3,
+        "benchmark_iterations": 10
+      }
+    }
+  },
+  "timestamp": "2026-02-10T05:04:28.852543"
+}

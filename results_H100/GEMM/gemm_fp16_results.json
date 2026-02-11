@@ -1,0 +1,93 @@
+{
+  "title": "GEMM Benchmark \u2014 FP16 Square Matrices on NVIDIA H100 NVL",
+  "device_config": {
+    "hardware": {
+      "gpu_name": "NVIDIA H100 NVL",
+      "compute_capability": "sm_90",
+      "num_sms": 132,
+      "global_memory_gb": 93.09
+    },
+    "software": {
+      "cuda_version": "12.6",
+      "pytorch_version": "2.7.1+cu126",
+      "python_version": "3.12.3",
+      "triton_version": "3.3.1",
+      "nvidia_driver": "580.105.08"
+    }
+  },
+  "benchmark_config": {
+    "dtype": "torch.float16",
+    "matrix_type": "square (M=N=K)",
+    "matrix_sizes": [
+      4096,
+      8192,
+      12288,
+      16384
+    ],
+    "warmup_iterations": 10,
+    "benchmark_iterations": 50
+  },
+  "results": {
+    "cuBLAS": {
+      "4096": {
+        "time_ms": 0.2762,
+        "tflops": 497.53,
+        "status": "ok",
+        "warmup_iterations": 10,
+        "benchmark_iterations": 50
+      },
+      "8192": {
+        "time_ms": 2.371,
+        "tflops": 463.73,
+        "status": "ok",
+        "warmup_iterations": 10,
+        "benchmark_iterations": 50
+      },
+      "12288": {
+        "time_ms": 8.247,
+        "tflops": 449.96,
+        "status": "ok",
+        "warmup_iterations": 10,
+        "benchmark_iterations": 50
+      },
+      "16384": {
+        "time_ms": 21.2926,
+        "tflops": 413.11,
+        "status": "ok",
+        "warmup_iterations": 10,
+        "benchmark_iterations": 50
+      }
+    },
+    "Triton": {
+      "4096": {
+        "time_ms": 0.2828,
+        "tflops": 486.02,
+        "status": "ok",
+        "warmup_iterations": 10,
+        "benchmark_iterations": 50
+      },
+      "8192": {
+        "time_ms": 2.9719,
+        "tflops": 369.97,
+        "status": "ok",
+        "warmup_iterations": 10,
+        "benchmark_iterations": 50
+      },
+      "12288": {
+        "time_ms": 9.7401,
+        "tflops": 380.99,
+        "status": "ok",
+        "warmup_iterations": 10,
+        "benchmark_iterations": 50
+      },
+      "16384": {
+        "time_ms": 23.3808,
+        "tflops": 376.21,
+        "status": "ok",
+        "warmup_iterations": 10,
+        "benchmark_iterations": 50
+      }
+    }
+  },
+  "timestamp": "2026-02-10T05:03:43.538747"
+}
