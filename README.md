@@ -583,7 +583,7 @@ If you use this benchmark suite in your research, please cite:
   author  = {Yadav, Divakar Kumar and Zhao, Tian and Kumar, Deepak},
   title   = {Evaluating NVIDIA CuTile: Performance and Productivity Tradeoffs 
              for GPU Kernel Programming on Blackwell Architecture},
-  booktile = {Proceedings of the 50th IEEE Annual Computers, Software, and Applications Conference (CompSAC'26)}.
+  booktitle = {Proceedings of the 50th IEEE Annual Computers, Software, and Applications Conference (CompSAC'26)}.
   location = {Madrid, Spain},
   month = {July},
   year    = {2026},
