@@ -76,7 +76,6 @@ CuTile/
 │   │   └── loc_comparison.json
 │   ├── hardware_specification.json   # Full GPU/CUDA/pip freeze snapshot
 │   ├── reproducibility_config.json   # Detailed reproducibility config
-│   └── paper_readiness_analysis.json
 │
 ├── results_B200/                   # Benchmark results — B200
 │   ├── (same structure as results_RTX_PRO_6000/)
@@ -528,7 +527,6 @@ Every results directory contains:
 |------|---------|
 | `hardware_specification.json` | Full GPU specs, CUDA versions, `pip freeze`, `lscpu`, `nvidia-smi` output |
 | `reproducibility_config.json` | Environment setup, benchmark parameters, applied fixes, CuTile-specific config |
-| `paper_readiness_analysis.json` | Paper narrative guidance and gap analysis |
 | `*/device_config.json` | Per-benchmark device snapshot |
 
 ### Reproducing on the Same Hardware
