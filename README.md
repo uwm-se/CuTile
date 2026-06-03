@@ -579,12 +579,15 @@ elapsed_ms = start_event.elapsed_time(end_event)
 If you use this benchmark suite in your research, please cite:
 
 ```bibtex
-@misc{cutile-benchmark-2026,
+@inproceedings{YadavCuTile2026,
+  author  = {Yadav, Divakar Kumar and Zhao, Tian and Kumar, Deepak},
   title   = {Evaluating NVIDIA CuTile: Performance and Productivity Tradeoffs 
              for GPU Kernel Programming on Blackwell Architecture},
-  author  = {Yadav, Divakar Kumar and Zhao, Tian and Kumar, Deepak},
+  booktile = {Proceedings of the 50th IEEE Annual Computers, Software, and Applications Conference (CompSAC'26)}.
+  location = {Madrid, Spain},
+  month = {July},
   year    = {2026},
-  url     = {https://github.com/yourname/cutile-llm-benchmarks}
+  url     = {https://github.com/uwm-se/CuTile}
 }
 ```
 
